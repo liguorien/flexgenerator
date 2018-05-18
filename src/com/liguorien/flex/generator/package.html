@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <body>  
+        <p>Provides annotations and the generator class. </p>
+        <h2>Quickstart</h2>
+        <ul>
+            <li>First of all, you need to add <b>fmg.jar</b> to the classpath of your project.</li>
+            <li>
+                <p>Now let's supose that you have a 'Person' class.  By default you want that
+                    each properties of the class to be bindable.  So we will put the 
+                <a href="FlexBindable.html">&#064;FlexBindable</a> annotation at the class level.</p>
+                <p>Now you want to set a custom event for the binding of a particular
+                    property, we will put the <a href="FlexBindable.html">&#064;FlexBindable</a> annotation on the getter
+                of this property.</p>
+                <p>You want to assign a default value to the property ? No problem,
+                    you can add the <a href="FlexDefault.html">&#064;FlexDefault</a> annotation on the getter of the 
+                property to indicate the default value.</p>
+                <p>You can use the <a href="FlexTransient.html">&#064;FlexTransient</a> annotation to keep a class or
+                a property on the java side.</p>
+            </li>
+            <li>
+                <p>Here is the code for the Person class :</p>
+                
+                <pre>
+package com.mycompany.myapp.entities;
+
+import com.liguorien.flex.generator.*;
+import java.util.*;
+
+&#064;FlexBindable
+public class Person  {
+
+    private int _id;
+    private String _name;
+    private int _serverSideOnlyProperty;
+    private List&lt;Person&gt; _contacts = new ArrayList&lt;Person&gt;();
+    private SessionHistory _sessionHistory = new SessionHistory();
+
+    &#064;FlexDefault("-1")
+    public int getId() {
+       return _id;
+    }
+    public void setId(int id) {
+       _id = id;
+    }
+
+
+    &#064;FlexBindable(event="change")
+    public String getName() {
+       return _name;
+    }
+    public void setName(String name) {
+       _name = name;
+    }
+
+    &#064;FlexList(Person.class)
+    &#064;FlexBindable(event="contactsChange")                
+    public List&lt;Person&gt; getContacts(){
+        return _contacts;
+    }
+    public void setContacts(List&lt;Person&gt; contacts){
+        _contacts = contacts;
+    }
+
+    &#064;FlexTransient
+    public int getServerSideOnlyProperty(){
+        return _serverSideOnlyProperty;
+    }
+    public void setServerSideOnlyProperty(int value){
+        _serverSideOnlyProperty = value;
+    }
+
+
+    &#064;FlexDefault("new")
+    &#064;FlexBindable(event="historyChange")
+    public SessionHistory getSessionHistory(){
+        return _sessionHistory;
+    }
+}
+                </pre>
+            </li>
+            <li><p>Then create a "main class" in your project which will configure
+                and run the generator :</p>
+                <pre>
+public static void main(String[] args) {
+
+    FlexModelGenerator generator = new FlexModelGenerator();
+
+    generator.addHandler(new FlexModelHandler());
+    generator.addHandler(new FlexModelBuilderHandler());
+    generator.addHandler(new Dom4jBuilderHandler());
+    
+    generator.setNewLineBeforeCurlyBrace(true);
+    generator.setUsingUnderscore(true);
+    generator.setClassSuffix("Model");
+    
+    generator.setOutputMode(OutputMode.FILE);
+    generator.setFlexOutputDirectory("/dev/myproject/myapp/src/flex/");
+    generator.setJavaOutputDirectory("/dev/myproject/myapp/src/java/");
+
+    generator.addClass(Person.class);
+    
+    generator.generate();
+}
+                </pre>
+            </li>
+            <li><p>Then this ActionScript 3 class will be generated :</p>
+                <pre>
+package com.mycompany.myapp.entities
+{
+        import flash.events.Event;
+        import flash.events.EventDispatcher;
+        import flash.utils.Dictionary;
+
+        public class PersonModel extends EventDispatcher
+        {
+
+                private var _contacts:Array = new Array();
+
+                [Bindable(event="contactsChange")]
+                public function get contacts():Array
+                {
+                        return _contacts;
+                }
+                public function set contacts(value:Array):void
+                {
+                        _contacts = value;
+                        dispatchEvent(new Event("contactsChange"));
+                }
+
+
+                private var _id:int = -1;
+
+                [Bindable()]
+                public function get id():int
+                {
+                        return _id;
+                }
+                public function set id(value:int):void
+                {
+                        _id = value;
+                }
+
+
+                private var _name:String;
+
+                [Bindable()]
+                public function get name():String
+                {
+                        return _name;
+                }
+                public function set name(value:String):void
+                {
+                        _name = value;
+                }
+
+
+                private var _sessionHistory:SessionHistory = new SessionHistory();
+
+                [Bindable(event="historyChange")]
+                public function get sessionHistory():SessionHistory
+                {
+                        return _sessionHistory;
+                }
+        }
+}
+
+                </pre>
+                
+            </li>
+        </ul>
+        
+        
+        
+    </body>
+</html>

@@ -1,0 +1,10 @@
+com.liguorien.flex.generator
+com.liguorien.flex.generator.handlers
+com.liguorien.flex.generator.utils
+com.liguorien.flex.generator.writers
+com.liguorien.flex.generator.writers.as3
+com.liguorien.flex.generator.writers.as3.methods
+com.liguorien.flex.generator.writers.as3.properties
+com.liguorien.flex.generator.writers.dom4j
+com.liguorien.flex.generator.writers.dom4j.methods
+com.liguorien.flex.generator.writers.dom4j.properties
